@@ -7,10 +7,17 @@ var messageKey = 0;
 
 var handleStaticRequests = function(request, response) {
   var filePath = './client' + request.url;
+  console.log(filePath);
+  console.log(__dirname);
 
   if (filePath == './client/') {
-    filePath = './client/index.html';
+    // filePath = './client/index.html';
+    filePath = __dirname + '/client/index.html';
+  } else {
+    filePath = __dirname + '/client/' + request.url;
   }
+
+  console.log(filePath);
 
   var extname = path.extname(filePath);
   var contentType = 'text/html';
@@ -37,6 +44,7 @@ var handleStaticRequests = function(request, response) {
       });
     }
     else {
+      console.log("404!");
       response.writeHead(404);
       response.end();
     }
