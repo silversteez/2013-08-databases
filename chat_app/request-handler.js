@@ -1,5 +1,6 @@
 var fs = require('fs');
 var path = require('path');
+var sql = require('../SQL/persistent_server');
 
 var messages = {};
 messages.general = {};
@@ -69,7 +70,7 @@ var handlePostMessage = function(request, roomName){
     messageObj.createdAt = new Date();
     roomObj[messageKey] = messageObj;
     messages[roomName] = roomObj;
-    saveToFile();
+    saveToFile(messageObj);
   });
   console.log("after postMessage messages: ", messages);
 };
@@ -84,6 +85,7 @@ var handleGetMessages = function(request, response, roomName){
 };
 
 var firstConnection = function(){
+
   var data = '';
   fs.readFile('./messageData.txt','utf8', function(err, data){
     if(!err){
@@ -94,14 +96,19 @@ var firstConnection = function(){
   console.log("after firstConnection messages: ", messages);
 };
 
-var saveToFile = function() {
-  fs.writeFile("./messageData.txt", JSON.stringify(messages), function(err){
-    if(err){
-      console.log('there was an error');
-    } else{
-      console.log('Successfully wrote to file');
-    }
-  });
+var saveToFile = function(messageObj) {
+  // fs.writeFile("./messageData.txt", JSON.stringify(messages), function(err){
+  //   if(err){
+  //     console.log('there was an error');
+  //   } else{
+  //     console.log('Successfully wrote to file');
+  //   }
+  // });
+  var queryString = "INSERT INTO messages (username, text, roomname) values (" +
+    "'" + messageObj.username + "', '" + messageObj.text + "', '" + messageObj.roomname + "');";
+
+  console.log(queryString);
+  sql.executeQuery(queryString);
 };
 
 var handleGetChatrooms = function(request, response){

@@ -10,14 +10,14 @@ describe("Persistent Node Chat Server", function() {
   beforeEach(function() {
     dbConnection = mysql.createConnection({
     /* TODO: Fill this out with your mysql username */
-      user: "",
+      user: "root",
     /* and password. */
       password: "",
       database: "chat"
     });
     dbConnection.connect();
 
-    var tablename = ""; // TODO: fill this out
+    var tablename = "messages"; // TODO: fill this out
 
     /* Empty the db table before each test so that multiple tests
      * (or repeated runs of the tests) won't screw each other up: */
@@ -33,7 +33,7 @@ describe("Persistent Node Chat Server", function() {
     request({method: "POST",
              uri: "http://127.0.0.1:8080/classes/room1",
              form: {username: "Valjean",
-                    message: "In mercy's name, three days is all I need."}
+                    text: "In mercy's name, three days is all I need."}
             },
             function(error, response, body) {
               /* Now if we look in the database, we should find the
@@ -49,8 +49,9 @@ describe("Persistent Node Chat Server", function() {
                 function(err, results, fields) {
                   // Should have one result:
                   expect(results.length).toEqual(1);
+                  console.log(results);
                   expect(results[0].username).toEqual("Valjean");
-                  expect(results[0].message).toEqual("In mercy's name, three days is all I need.");
+                  expect(results[0].text).toEqual("In mercy's name, three days is all I need.");
                   /* TODO: You will need to change these tests if the
                    * column names in your schema are different from
                    * mine! */
