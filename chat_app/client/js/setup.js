@@ -70,7 +70,8 @@ $(document).ready(function(){
       var chatrooms = JSON.parse(response);
       var $chatDropDown = $('#enterChatRoom');
       for (var i = 0; i < chatrooms.length; i++) {
-        $chatDropDown.append('<option> ' + chatrooms[i] + '</option>');
+        var chatroom = chatrooms[i].roomname;
+        $chatDropDown.append('<option> ' + chatroom + '</option>');
       }
     },
     error: function(){
@@ -87,7 +88,7 @@ $(document).ready(function(){
       },
       success: function(response){
         response = JSON.parse(response);
-        // console.log(results);
+
         $('#container').html('');
         var input;
 
