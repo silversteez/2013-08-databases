@@ -1,6 +1,7 @@
 var http = require("http");
 var url = require('url');
 var rh = require('./request-handler');
+var path = require('path');
 
 var requestListener = function (request, response) {
   console.log("Serving request type " + request.method + " for url " + request.url);
@@ -12,18 +13,21 @@ var requestListener = function (request, response) {
   response.writeHead(statusCode, headers);
 
   var urlPath = url.parse(request.url).pathname;
+
+  console.log("urlPath is: ", urlPath);
+
   var splitPath = urlPath.split('/');
   splitPath.shift();
 
   if(request.method === 'POST'){
     if(splitPath[0] === 'messages'){
       console.log(splitPath[1]);
-      rh.handlePostMessage(request, splitPath[1]);
+      rh.handlePostMessage(request, decodeURIComponent(splitPath[1]));
       response.end("Post Message Handled");
     }
   } else if (request.method === 'GET'){
     if(splitPath[0] === 'messages') {
-      rh.handleGetMessages(request, response, splitPath[1]);
+      rh.handleGetMessages(request, response, decodeURIComponent(splitPath[1]));
     } else if(splitPath[0] === 'chatrooms'){
       rh.handleGetChatrooms(request, response);
     } else {

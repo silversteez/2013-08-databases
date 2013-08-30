@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var sql = require('../SQL/persistent_server');
+var mysql = require('mysql');
 
 var handleStaticRequests = function(request, response) {
   var filePath = './client' + request.url;
@@ -48,7 +49,7 @@ var handleStaticRequests = function(request, response) {
 };
 
 var handlePostMessage = function(request, roomName){
-  roomName = roomName.replace('%20', ' ');
+  //roomName = roomName.replace('%20', ' ');
 
   var messageData = '';
 
@@ -65,13 +66,13 @@ var handlePostMessage = function(request, roomName){
 };
 
 var handleGetMessages = function(request, response, roomName){
-  roomName = roomName.replace('%20', ' ');
+  //roomName = roomName.replace('%20', ' ');
 
   request.on("error", function(){
     console.log("There was an error. Frick");
   });
   var messages = {};
-  var queryString = "SELECT username, text, roomname FROM messages WHERE roomname = " + "'" + roomName + "';";
+  var queryString = "SELECT username, text, roomname FROM messages WHERE roomname = " + mysql.escape(roomName) + ";";
   sql.executeQuery(queryString, function(err, rows, fields){
     messages.results = rows;
     response.write(JSON.stringify(messages));
@@ -81,7 +82,8 @@ var handleGetMessages = function(request, response, roomName){
 
 var saveToFile = function(messageObj) {
   var queryString = "INSERT INTO messages (username, text, roomname) values (" +
-    "'" + messageObj.username + "', '" + messageObj.text + "', '" + messageObj.roomname + "');";
+    mysql.escape(messageObj.username) + ", " + mysql.escape(messageObj.text) + ", " +
+    mysql.escape(messageObj.roomname) + ");";
 
   console.log(queryString);
   sql.executeQuery(queryString);
